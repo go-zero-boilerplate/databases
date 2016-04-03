@@ -46,7 +46,7 @@ func GetTestingDb(dummyTableNameToCreate string) (*sqlx.DB, error) {
 		_, err = db.Exec(`        
         CREATE TABLE ` + dummyTableNameToCreate + ` (
              id    INTEGER PRIMARY KEY AUTO_INCREMENT
-            ,name  VARCHAR(512)
+            ,name  VARCHAR(200)
             ,age   INTEGER
         )
         `)
