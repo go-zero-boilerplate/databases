@@ -1,6 +1,8 @@
 package sql_statement
 
 import (
+	"fmt"
+
 	"github.com/thcyron/sqlbuilder"
 
 	"github.com/go-zero-boilerplate/databases"
@@ -15,11 +17,10 @@ type insertStatement struct {
 	dialect databases.Dialect
 	db      databases.Database
 
-	onInserted       OnInserted
-	onInsertedWithId OnInsertedWithId
-
 	TableName string
 	Columns   []*sql.ColumnNameAndValue
+
+	LastInsertIdDest *int64
 }
 
 func (i *insertStatement) Execute() error {
@@ -36,19 +37,12 @@ func (i *insertStatement) Execute() error {
 		return err
 	}
 
-	//TODO: Think this is possible for instance if int64 ID's are not used
-	lastInsertId, err := result.LastInsertId()
-	if err != nil {
-		if i.onInserted != nil {
-			i.onInserted.OnInserted()
+	if i.LastInsertIdDest != nil {
+		lastInsertId, err := result.LastInsertId()
+		if err != nil {
+			return fmt.Errorf("Unable to get LastInsertId, error: %s", err.Error())
 		}
-		if i.onInsertedWithId != nil {
-			//TODO: This seems to be unexpected, will never get fired
-		}
-	} else {
-		if i.onInsertedWithId != nil {
-			i.onInsertedWithId.OnInsertedWithId(lastInsertId)
-		}
+		*i.LastInsertIdDest = lastInsertId
 	}
 
 	return nil

@@ -1,6 +1,8 @@
 package sql_statement
 
 import (
+	"fmt"
+
 	"github.com/thcyron/sqlbuilder"
 
 	"github.com/go-zero-boilerplate/databases"
@@ -15,11 +17,11 @@ type updateStatement struct {
 	dialect databases.Dialect
 	db      databases.Database
 
-	onUpdated OnUpdated
-
 	TableName string
 	Wheres    []*sql.WhereCondition
 	Sets      []*sql.ColumnNameAndValue
+
+	RowsAffectedDest *int64
 }
 
 func (u *updateStatement) Execute() error {
@@ -35,13 +37,17 @@ func (u *updateStatement) Execute() error {
 
 	query, args := builder.Build()
 
-	_, err := u.db.Exec(query, args...)
+	result, err := u.db.Exec(query, args...)
 	if err != nil {
 		return err
 	}
 
-	if u.onUpdated != nil {
-		u.onUpdated.OnUpdated()
+	if u.RowsAffectedDest != nil {
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			return fmt.Errorf("Unable to get RowsAffected, error: %s", err.Error())
+		}
+		*u.RowsAffectedDest = rowsAffected
 	}
 
 	return nil

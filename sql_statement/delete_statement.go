@@ -1,6 +1,8 @@
 package sql_statement
 
 import (
+	"fmt"
+
 	"github.com/thcyron/sqlbuilder"
 
 	"github.com/go-zero-boilerplate/databases"
@@ -15,10 +17,10 @@ type deleteStatement struct {
 	dialect databases.Dialect
 	db      databases.Database
 
-	onDeleted OnDeleted
-
 	TableName string
 	Wheres    []*sql.WhereCondition
+
+	RowsAffectedDest *int64
 }
 
 func (d *deleteStatement) Execute() error {
@@ -30,13 +32,17 @@ func (d *deleteStatement) Execute() error {
 
 	query, args := builder.Build()
 
-	_, err := d.db.Exec(query, args...)
+	result, err := d.db.Exec(query, args...)
 	if err != nil {
 		return err
 	}
 
-	if d.onDeleted != nil {
-		d.onDeleted.OnDeleted()
+	if d.RowsAffectedDest != nil {
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			return fmt.Errorf("Unable to get RowsAffected, error: %s", err.Error())
+		}
+		*d.RowsAffectedDest = rowsAffected
 	}
 
 	return nil

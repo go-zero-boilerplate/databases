@@ -6,9 +6,8 @@ import (
 )
 
 type InsertBuilder interface {
-	OnInserted(onInserted OnInserted) InsertBuilder
-	OnInsertedWithId(onInsertedWithId OnInsertedWithId) InsertBuilder
 	Set(name string, value interface{}) InsertBuilder
+	LastInsertIdDest(lastInsertIdDest *int64) InsertBuilder
 	Build() InsertStatement
 }
 
@@ -30,18 +29,13 @@ type insertBuilder struct {
 	i *insertStatement
 }
 
-func (i *insertBuilder) OnInserted(onInserted OnInserted) InsertBuilder {
-	i.i.onInserted = onInserted
-	return i
-}
-
-func (i *insertBuilder) OnInsertedWithId(onInsertedWithId OnInsertedWithId) InsertBuilder {
-	i.i.onInsertedWithId = onInsertedWithId
-	return i
-}
-
 func (i *insertBuilder) Set(name string, value interface{}) InsertBuilder {
 	i.i.Columns = append(i.i.Columns, &sql.ColumnNameAndValue{Name: name, Value: value})
+	return i
+}
+
+func (i *insertBuilder) LastInsertIdDest(lastInsertIdDest *int64) InsertBuilder {
+	i.i.LastInsertIdDest = lastInsertIdDest
 	return i
 }
 
