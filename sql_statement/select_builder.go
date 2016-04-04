@@ -7,7 +7,6 @@ import (
 
 type SelectBuilder interface {
 	Where(condition string, args ...interface{}) SelectBuilder
-	WhereId(idFieldName string, id int64) SelectBuilder
 	OrderBy(orderBy string) SelectBuilder
 	Limit(limit int) SelectBuilder
 	Offset(offset int) SelectBuilder
@@ -45,10 +44,6 @@ type selectBuilder struct {
 func (s *selectBuilder) Where(condition string, args ...interface{}) SelectBuilder {
 	s.s.Where = append(s.s.Where, &sql.WhereCondition{Condition: condition, Args: args})
 	return s
-}
-
-func (s *selectBuilder) WhereId(idFieldName string, id int64) SelectBuilder {
-	return s.Where(idFieldName+" = ?", id)
 }
 
 func (s *selectBuilder) OrderBy(orderBy string) SelectBuilder {

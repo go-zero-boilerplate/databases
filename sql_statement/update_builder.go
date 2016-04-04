@@ -7,7 +7,6 @@ import (
 
 type UpdateBuilder interface {
 	Where(condition string, args ...interface{}) UpdateBuilder
-	WhereId(idFieldName string, id int64) UpdateBuilder
 	Set(name string, value interface{}) UpdateBuilder
 	RowsAffectedDest(rowsAffectedDest *int64) UpdateBuilder
 	Build() UpdateStatement
@@ -34,10 +33,6 @@ type updateBuilder struct {
 func (u *updateBuilder) Where(condition string, args ...interface{}) UpdateBuilder {
 	u.u.Wheres = append(u.u.Wheres, &sql.WhereCondition{Condition: condition, Args: args})
 	return u
-}
-
-func (u *updateBuilder) WhereId(idFieldName string, id int64) UpdateBuilder {
-	return u.Where(idFieldName+" = ?", id)
 }
 
 func (u *updateBuilder) Set(name string, value interface{}) UpdateBuilder {

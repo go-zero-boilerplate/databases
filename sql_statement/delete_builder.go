@@ -7,7 +7,6 @@ import (
 
 type DeleteBuilder interface {
 	Where(condition string, args ...interface{}) DeleteBuilder
-	WhereId(idFieldName string, id int64) DeleteBuilder
 	RowsAffectedDest(rowsAffectedDest *int64) DeleteBuilder
 	Build() DeleteStatement
 }
@@ -33,10 +32,6 @@ type deleteBuilder struct {
 func (d *deleteBuilder) Where(condition string, args ...interface{}) DeleteBuilder {
 	d.d.Wheres = append(d.d.Wheres, &sql.WhereCondition{Condition: condition, Args: args})
 	return d
-}
-
-func (d *deleteBuilder) WhereId(idFieldName string, id int64) DeleteBuilder {
-	return d.Where(idFieldName+" = ?", id)
 }
 
 func (d *deleteBuilder) RowsAffectedDest(rowsAffectedDest *int64) DeleteBuilder {
