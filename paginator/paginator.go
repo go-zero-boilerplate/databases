@@ -69,7 +69,7 @@ func (d *dbPaginator) GetNextIndex() (int, error) {
 	}
 
 	if d.listContainer.Count() == 0 {
-		return -1, fmt.Errorf("BlogIterator does not have more entries")
+		return -1, fmt.Errorf("Paginator does not have more entries")
 	}
 
 	return d.GetNextIndex()
