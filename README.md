@@ -14,7 +14,20 @@ For a sql model with code generator see [gensql](https://github.com/go-zero-boil
 
 ## Usage of `DeferredRollbackIfNotHandled`
 
-This method should be used with the `defer` keyword. This is an example:
+This method should be used with the `defer` keyword. You can almost think of it like the native golang `os.File` method `Close()` that we defer so often. This is a typical file open/close example:
+
+```
+file, err := os.Open("/file/path")
+if err != nil {
+    log.Fatal(err)
+}
+
+doSomething()
+
+defer file.Close()
+```
+
+And now we can use `DeferredRollbackIfNotHandled` the same way:
 
 ```
 tx, err := db.BeginTx()
