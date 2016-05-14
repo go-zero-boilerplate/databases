@@ -7,4 +7,7 @@ type Database interface {
 	Exec(query string, args ...interface{}) (ExecResult, error)
 	QueryRow(query string, args ...interface{}) ResultRow
 	Query(query string, args ...interface{}) (ResultRows, error)
+
+	BeginTx() (Database, error)
+	CommitTx() error
 }

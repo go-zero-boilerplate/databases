@@ -2,6 +2,7 @@ package database_sqlx
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 
@@ -41,4 +42,16 @@ func (s *sqlxDatabase) QueryRow(query string, args ...interface{}) databases.Res
 
 func (s *sqlxDatabase) Query(query string, args ...interface{}) (databases.ResultRows, error) {
 	return s.db.Queryx(query, args...)
+}
+
+func (s *sqlxDatabase) BeginTx() (databases.Database, error) {
+	tx, err := s.db.Beginx()
+	if err != nil {
+		return nil, err
+	}
+	return &sqlxTransaction{tx, true}, nil
+}
+
+func (s *sqlxDatabase) CommitTx() error {
+	return errors.New("[databases] Unexpected call to commit (non-transaction) Database instance")
 }
