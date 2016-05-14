@@ -11,4 +11,7 @@ type Database interface {
 	BeginTx() (Database, error)
 	CommitTx() error
 	RollbackTx() error
+
+	//DeferredDone should be called as a deferred method. The error pointer is used to detemine if should Commit or Rollback the transaction
+	DeferredDone(err *error) error
 }

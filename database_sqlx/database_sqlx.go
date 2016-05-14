@@ -59,3 +59,7 @@ func (s *sqlxDatabase) CommitTx() error {
 func (s *sqlxDatabase) RollbackTx() error {
 	return errors.New("[databases] Unexpected call to RollbackTx (non-transaction) Database instance")
 }
+
+func (s *sqlxDatabase) DeferredDone(err *error) error {
+	return errors.New("[databases] Unexpected call to DeferredDone (non-transaction) Database instance")
+}

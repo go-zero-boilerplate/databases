@@ -57,3 +57,11 @@ func (s *sqlxTransaction) RollbackTx() error {
 	//TODO: Is it fine to just do nothing if we are not the "owner"?
 	return nil
 }
+
+func (s *sqlxTransaction) DeferredDone(err *error) error {
+	if *err == nil {
+		return s.CommitTx()
+	} else {
+		return s.RollbackTx()
+	}
+}
