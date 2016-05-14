@@ -10,4 +10,5 @@ type Database interface {
 
 	BeginTx() (Database, error)
 	CommitTx() error
+	RollbackTx() error
 }

@@ -53,5 +53,9 @@ func (s *sqlxDatabase) BeginTx() (databases.Database, error) {
 }
 
 func (s *sqlxDatabase) CommitTx() error {
-	return errors.New("[databases] Unexpected call to commit (non-transaction) Database instance")
+	return errors.New("[databases] Unexpected call to CommitTx (non-transaction) Database instance")
+}
+
+func (s *sqlxDatabase) RollbackTx() error {
+	return errors.New("[databases] Unexpected call to RollbackTx (non-transaction) Database instance")
 }

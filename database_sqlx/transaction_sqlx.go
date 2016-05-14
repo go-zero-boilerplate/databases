@@ -49,3 +49,11 @@ func (s *sqlxTransaction) CommitTx() error {
 	//TODO: Is it fine to just do nothing if we are not the "owner"?
 	return nil
 }
+
+func (s *sqlxTransaction) RollbackTx() error {
+	if s.isOwner {
+		return s.tx.Rollback()
+	}
+	//TODO: Is it fine to just do nothing if we are not the "owner"?
+	return nil
+}
