@@ -49,7 +49,10 @@ func (s *sqlxDatabase) BeginTx() (databases.Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &sqlxTransaction{tx, true}, nil
+	return &sqlxTransaction{
+		tx:      tx,
+		isOwner: true,
+	}, nil
 }
 
 func (s *sqlxDatabase) CommitTx() error {
@@ -58,4 +61,8 @@ func (s *sqlxDatabase) CommitTx() error {
 
 func (s *sqlxDatabase) RollbackTx() error {
 	return errors.New("[databases] Unexpected call to RollbackTx (non-transaction) Database instance")
+}
+
+func (s *sqlxDatabase) DeferredRollbackIfNotHandled() error {
+	return errors.New("[databases] Unexpected call to DeferredRollbackIfNotHandled (non-transaction) Database instance")
 }

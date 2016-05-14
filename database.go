@@ -11,4 +11,7 @@ type Database interface {
 	BeginTx() (Database, error)
 	CommitTx() error
 	RollbackTx() error
+
+	//DeferredRollbackIfNotHandled must be used with the `defer` keyword to finish a transaction - see github repo readme for usage example
+	DeferredRollbackIfNotHandled() error
 }

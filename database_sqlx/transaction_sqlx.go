@@ -10,6 +10,7 @@ import (
 type sqlxTransaction struct {
 	tx      *sqlx.Tx
 	isOwner bool
+	handled bool
 }
 
 func (s *sqlxTransaction) IsErrNoRows(err error) bool {
@@ -39,21 +40,40 @@ func (s *sqlxTransaction) Query(query string, args ...interface{}) (databases.Re
 
 func (s *sqlxTransaction) BeginTx() (databases.Database, error) {
 	//A transaction already started, so just return same instance but with "isOwner" = FALSE
-	return &sqlxTransaction{s.tx, false}, nil
+	return &sqlxTransaction{
+		tx:      s.tx,
+		isOwner: false,
+	}, nil
 }
 
 func (s *sqlxTransaction) CommitTx() error {
-	if s.isOwner {
-		return s.tx.Commit()
+	if !s.isOwner {
+		//TODO: Is it fine to just do nothing if we are not the "owner"?
+		return nil
 	}
-	//TODO: Is it fine to just do nothing if we are not the "owner"?
-	return nil
+
+	s.handled = true
+	return s.tx.Commit()
 }
 
 func (s *sqlxTransaction) RollbackTx() error {
-	if s.isOwner {
-		return s.tx.Rollback()
+	if !s.isOwner {
+		//TODO: Is it fine to just do nothing if we are not the "owner"?
+		return nil
 	}
-	//TODO: Is it fine to just do nothing if we are not the "owner"?
-	return nil
+
+	s.handled = true
+	return s.tx.Rollback()
+}
+
+func (s *sqlxTransaction) DeferredRollbackIfNotHandled() error {
+	if !s.isOwner {
+		//TODO: Is it fine to just do nothing if we are not the "owner"?
+		return nil
+	}
+
+	if s.handled {
+		return nil
+	}
+	return s.RollbackTx()
 }
